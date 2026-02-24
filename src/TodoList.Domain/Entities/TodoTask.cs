@@ -11,4 +11,5 @@ public class TodoTask
     public bool IsCompleted { get;  set; }
     public bool IsImportant { get;  set; }
     public DateTime CreatedAt { get;  set; }
+    public int TodoListId { get; set; }
 }
