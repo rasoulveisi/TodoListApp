@@ -12,4 +12,5 @@ public class TodoTask
     public bool IsImportant { get;  set; }
     public DateTime CreatedAt { get;  set; }
     public int TodoListId { get; set; }
+    public ICollection<TaskCategory>? TaskCategories { get; set; }
 }
