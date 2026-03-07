@@ -16,7 +16,7 @@ todos:
     status: cancelled
   - id: infra-efcore
     content: "Phase 2: Set up EF Core DbContext, entity configurations, and initial migration"
-    status: pending
+    status: completed
   - id: infra-repos-dtos
     content: "Phase 2: Implement repositories, DTOs, pagination, and exception handling"
     status: pending
