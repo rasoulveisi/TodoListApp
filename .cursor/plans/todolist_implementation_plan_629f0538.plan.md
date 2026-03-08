@@ -173,7 +173,7 @@ Since entities are simple POCOs with no business logic, unit tests for the domai
 ### Implementation Tasks
 
 - Delete `Class1.cs`
-- **Add NuGet packages:** `Microsoft.EntityFrameworkCore.SqlServer` (or `.Sqlite` for local dev), `Microsoft.EntityFrameworkCore.Design`
+- **Add NuGet packages:** `Npgsql.EntityFrameworkCore.PostgreSQL`, `Microsoft.EntityFrameworkCore.Design`
 - **DbContext:** Create `TodoListDbContext` with `DbSet<TodoItem>`, `DbSet<TodoList>`, `DbSet<Category>`
 - **Entity Configurations:** Fluent API configurations in `Configurations/` folder (table names, indexes, relationships, value object mapping for RecurrencePattern as owned type)
 - **Repository implementations:** Implement `TodoItemRepository`, `TodoListRepository`, `CategoryRepository` (concrete classes that implement `ITodoItemAbstraction`, `ITodoListAbstraction`, `ICategoryAbstraction`) using EF Core

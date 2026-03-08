@@ -138,7 +138,7 @@ Expose the application's functionality through RESTful endpoints.
 ## Constraints & Conventions
 
 - Target framework: **.NET 10**
-- Database: SQL Server (or SQLite for local development)
+- Database: PostgreSQL
 - Testing framework: xUnit
 - All domain logic must remain in `TodoList.Domain` with zero infrastructure dependencies
 - Abstractions defined in the Domain; implementations in Infrastructure
