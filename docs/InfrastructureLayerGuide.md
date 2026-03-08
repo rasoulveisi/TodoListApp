@@ -1,6 +1,6 @@
 # Infrastructure Layer — EF Core DbContext & Configurations Guide
 
-This document explains the Entity Framework Core setup in the `TodoList.Infrastructure` project: the DbContext, Fluent API configurations, and migrations. It teaches the concepts you need to map domain entities to a SQL Server database.
+This document explains the Entity Framework Core setup in the `TodoList.Infrastructure` project: the DbContext, Fluent API configurations, and migrations. It teaches the concepts you need to map domain entities to a PostgreSQL database.
 
 ---
 
@@ -13,8 +13,8 @@ src/TodoList.Infrastructure/
 │   ├── TodoListConfiguration.cs
 │   └── CategoryConfiguration.cs
 ├── Migrations/
-│   ├── 20260307152725_InitialCreate.cs
-│   ├── 20260307152725_InitialCreate.Designer.cs
+│   ├── *_InitialCreate.cs
+│   ├── *_InitialCreate.Designer.cs
 │   └── TodoListDbContextModelSnapshot.cs
 ├── TodoListDbContext.cs
 └── TodoList.Infrastructure.csproj
@@ -127,7 +127,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 | **ToTable("Categories")** | Table name in the database. Without it, EF would use the class name (e.g. `Category`). |
 | **HasKey(c => c.Id)** | Declares the primary key. Usually optional if the property is named `Id`. |
 | **Property(...).IsRequired()** | Column is NOT NULL. |
-| **Property(...).HasMaxLength(n)** | String column max length; in SQL Server this becomes `nvarchar(n)`. |
+| **Property(...).HasMaxLength(n)** | String column max length; in PostgreSQL this becomes `character varying(n)`. |
 
 `Color` is optional (nullable in the domain), so we only set `HasMaxLength(7)` for hex codes like `#FF5733`.
 
@@ -253,24 +253,28 @@ The API project needs to know which database to use and must register the DbCont
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=TodoListDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+  "DefaultConnection": "Host=localhost;Port=5432;Database=TodoListDb;Username=postgres;Password=postgres"
 }
 ```
 
-- **Server=(localdb)\\mssqllocaldb** — LocalDB instance (lightweight SQL Server for development).
-- **Database=TodoListDb** — Database name. Created automatically when you run `database update` if it doesn’t exist.
-- **Trusted_Connection=True** — Windows authentication.
-- **MultipleActiveResultSets=true** — Allows multiple result sets on one connection (useful for some scenarios).
+- **Host=localhost** — PostgreSQL server address (use `localhost` for a local install).
+- **Port=5432** — Default PostgreSQL port.
+- **Database=TodoListDb** — Database name. Create it (e.g. `createdb TodoListDb`) or let EF create it when you run `database update` if your user has permission.
+- **Username** / **Password** — PostgreSQL role and password. Set these to match your installation (e.g. `postgres` / your password).
 
 **Program.cs:**
 
 ```csharp
 builder.Services.AddDbContext<TodoListDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 ```
 
 - **AddDbContext&lt;TodoListDbContext&gt;** — Registers the DbContext with the DI container. Default lifetime is **Scoped** (one instance per HTTP request).
-- **UseSqlServer(...)** — Uses the SQL Server provider and the connection string from configuration.
+- **UseNpgsql(...)** — Uses the Npgsql (PostgreSQL) provider and the connection string from configuration.
+
+### Connecting from Rider
+
+In Rider: **View → Tool Windows → Database**, then **+** → **PostgreSQL**. Set Host to `localhost`, Port to `5432`, Database to `TodoListDb`, and use the same Username/Password as in your connection string. After PostgreSQL is installed and `dotnet ef database update` has been run, **Test Connection** should succeed.
 
 ---
 
@@ -278,7 +282,7 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 
 | Package | Project | Purpose |
 |---|---|---|
-| **Microsoft.EntityFrameworkCore.SqlServer** | Infrastructure | SQL Server provider for EF Core. |
+| **Npgsql.EntityFrameworkCore.PostgreSQL** | Infrastructure, Api | PostgreSQL provider for EF Core (Npgsql). Api references it for `UseNpgsql` in `Program.cs`. |
 | **Microsoft.EntityFrameworkCore.Design** | Infrastructure, Api | Design-time support: migrations, scaffolding. Required in the startup project for `dotnet ef` commands. |
 
 ---
@@ -299,7 +303,34 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 | Many-to-many | `HasMany().WithMany().UsingEntity("...")` | TodoItem ↔ Category, table `TodoItemCategory` |
 | Query performance | `HasIndex(...)` | TodoListId, IsCompleted, DueDate, IsImportant, IsInMyDay |
 | Schema versioning | Migrations | `InitialCreate` — creates all tables and indexes |
-| DI registration | `AddDbContext<T>(...)` | In Api `Program.cs` with `UseSqlServer` |
+| DI registration | `AddDbContext<T>(...)` | In Api `Program.cs` with `UseNpgsql` |
+
+---
+
+## Who Writes the Configuration Classes?
+
+| Approach | Who writes configurations |
+|---|---|
+| **Code-first (this project)** | The **developer** writes them. You design the domain model first, then add Fluent API configuration classes (e.g. `TodoItemConfiguration`, `CategoryConfiguration`) by hand. EF Core does not generate these when you add a new entity. |
+| **Database-first (scaffolding)** | **Tools** can generate them. You have an existing database; you run `dotnet ef dbcontext scaffold ...` and EF generates entity classes and (in supported setups) configuration from the existing schema. So in that workflow, configs are generated from the database. |
+
+In this solution we use code-first: the developer writes the configuration classes.
+
+---
+
+## Fluent API vs LINQ — Why Not LINQ for Configuration?
+
+**LINQ** and the **Fluent API** do different jobs:
+
+- **LINQ** is for **querying** data at runtime (e.g. `context.TodoItems.Where(x => x.IsCompleted).ToList()`). It describes *what data to read*, not how the database is shaped.
+- **Fluent API (configurations)** defines the **model and schema** (tables, columns, keys, relationships, indexes). It runs at startup and when generating migrations; it does not query data.
+
+You **cannot** replace configuration with LINQ — there is no “LINQ for schema.” The options for defining the model in EF Core are:
+
+1. **Fluent API** — what we use: separate configuration classes with `builder.ToTable(...)`, `builder.Property(...).HasMaxLength(...)`, `builder.HasOne(...).WithMany(...)`, etc.
+2. **Data annotations** — attributes on the entity (e.g. `[Table("TodoItems")]`, `[MaxLength(200)]`). That would put persistence details inside the domain entities; this project keeps the domain clean and puts all mapping in Infrastructure via Fluent API.
+
+So: configurations are written by the developer in this workflow, and they use **Fluent API** (or data annotations), not LINQ. LINQ is for queries; schema is defined with Fluent API or attributes.
 
 ---
 

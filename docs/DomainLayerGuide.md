@@ -46,7 +46,7 @@ Domain  ←  Infrastructure  ←  Api
 - **Infrastructure** implements those abstractions using EF Core and a real database.
 - **Api** handles HTTP requests, calls the infrastructure, and returns responses.
 
-The benefit: you can change the database (e.g. switch from SQL Server to PostgreSQL) without touching the domain layer at all.
+The benefit: you can change the database (e.g. switch from PostgreSQL to another provider) without touching the domain layer at all.
 
 ---
 
