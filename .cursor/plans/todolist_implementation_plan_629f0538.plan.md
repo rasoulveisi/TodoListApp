@@ -4,28 +4,28 @@ overview: Rewrite SideProject.md as an AI-friendly project proposal and create a
 todos:
   - id: rewrite-sideproject
     content: "Rewrite SideProject.md as an AI-friendly project proposal: remove personal references, add domain model overview, structure as formal proposal with Objective/Scope/Architecture/Phases/Deliverables"
-    status: completed
+    status: pending
   - id: fix-project-refs
     content: Fix duplicate project reference in TodoList.Api.csproj (remove incorrect ..\.src\TodoList.Domain path)
-    status: completed
+    status: pending
   - id: domain-entities
     content: "Phase 1: Implement domain entities (TodoItem, TodoList, Category), value objects (RecurrencePattern), enums (RecurrenceType), and abstractions"
-    status: completed
+    status: pending
   - id: domain-tests
     content: "Phase 1: Unit tests deferred — entities are simple POCOs; testing focus moves to handler/integration tests in Phase 2-3"
-    status: cancelled
+    status: pending
   - id: infra-efcore
     content: "Phase 2: Set up EF Core DbContext, entity configurations, and initial migration"
-    status: completed
+    status: pending
   - id: infra-repos-dtos
     content: "Phase 2: Implement repositories, DTOs, pagination, and exception handling"
-    status: pending
+    status: completed
   - id: api-mediatr
     content: "Phase 3: Set up MediatR commands/queries for all CRUD and business operations"
-    status: pending
+    status: completed
   - id: api-controllers
     content: "Phase 3: Implement API controllers, middleware, DI wiring, validation, and logging"
-    status: pending
+    status: completed
 isProject: false
 ---
 
