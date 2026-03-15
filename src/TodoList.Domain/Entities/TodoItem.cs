@@ -15,8 +15,8 @@ public class TodoItem
     public DateTime? CompletedAt { get; set; }
     public RecurrencePattern? Recurrence { get; set; }
 
-    public int TodoListId { get; set; }
-    public TodoList TodoList { get; set; } = null!;
+    public int? TodoListId { get; set; }
+    public TodoList? TodoList { get; set; }
 
     public List<Category> Categories { get; set; } = [];
 }

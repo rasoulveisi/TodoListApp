@@ -1,6 +1,23 @@
 @TodoList.Api_HostAddress = http://localhost:5067
 
-GET {{TodoList.Api_HostAddress}}/weatherforecast/
+### TodoItems (filter: myday | planned | important)
+GET {{TodoList.Api_HostAddress}}/api/todoitems?page=1&pageSize=20
+Accept: application/json
+
+### TodoItem by id
+GET {{TodoList.Api_HostAddress}}/api/todoitems/1
+Accept: application/json
+
+### TodoLists
+GET {{TodoList.Api_HostAddress}}/api/todolists
+Accept: application/json
+
+### TodoList by id (with items)
+GET {{TodoList.Api_HostAddress}}/api/todolists/1
+Accept: application/json
+
+### Categories
+GET {{TodoList.Api_HostAddress}}/api/categories
 Accept: application/json
 
 ###

@@ -46,7 +46,8 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
         builder.HasOne(t => t.TodoList)
             .WithMany(l => l.Items)
             .HasForeignKey(t => t.TodoListId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasMany(t => t.Categories)
             .WithMany()
