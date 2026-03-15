@@ -15,8 +15,7 @@ public class CompleteTodoItemCommandHandler(ITodoItemAbstraction todoItems)
         var item = await todoItems.GetByIdAsync(request.Id, cancellationToken);
         if (item == null)
             throw new NotFoundException("TodoItem", request.Id);
-        item.IsCompleted = request.Complete;
-        item.CompletedAt = request.Complete ? DateTime.UtcNow : null;
+        item.Complete();
         await todoItems.UpdateAsync(item, cancellationToken);
         return item.ToResponse();
     }
