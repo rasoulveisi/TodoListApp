@@ -15,7 +15,10 @@ public class ToggleMyDayCommandHandler(ITodoItemAbstraction todoItems)
         var item = await todoItems.GetByIdAsync(request.Id, cancellationToken);
         if (item == null)
             throw new NotFoundException("TodoItem", request.Id);
-        item.IsInMyDay = !item.IsInMyDay;
+        if (item.IsInMyDay)
+            item.UnmarkAsMyDay();
+        else
+            item.MarkAsMyDay();
         await todoItems.UpdateAsync(item, cancellationToken);
         return item.ToResponse();
     }

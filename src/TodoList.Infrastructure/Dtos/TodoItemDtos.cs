@@ -16,6 +16,7 @@ public record UpdateTodoItemRequest(
     DateTime? DueDate,
     bool IsImportant,
     bool IsInMyDay,
+    bool IsCompleted,
     RecurrenceDto? Recurrence,
     IReadOnlyList<int> CategoryIds);
 

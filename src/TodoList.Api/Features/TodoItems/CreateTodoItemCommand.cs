@@ -41,21 +41,27 @@ public class CreateTodoItemCommandHandler(
             }
         }
 
-        var item = new Domain.Entities.TodoItem
+        var recurrence = request.Request.Recurrence is null ? null : new Domain.ValueObjects.RecurrencePattern
         {
-            Title = request.Request.Title,
-            Description = request.Request.Description,
+            Type = request.Request.Recurrence.Type,
+            Interval = request.Request.Recurrence.Interval,
+            EndDate = request.Request.Recurrence.EndDate
+        };
+
+        var dueDate = request.Request.DueDate;
+        var isInMyDay = request.Request.IsInMyDay
+            || (dueDate.HasValue && dueDate.Value.Date == DateTime.UtcNow.Date);
+
+        var item = new Domain.Entities.TodoItem(
+            request.Request.Title,
+            request.Request.Description,
+            dueDate,
+            request.Request.IsImportant,
+            isInMyDay,
+            recurrence)
+        {
             TodoListId = todoListId,
-            DueDate = request.Request.DueDate,
-            IsImportant = request.Request.IsImportant,
-            IsInMyDay = request.Request.IsInMyDay,
             CreatedAt = DateTime.UtcNow,
-            Recurrence = request.Request.Recurrence is null ? null : new Domain.ValueObjects.RecurrencePattern
-            {
-                Type = request.Request.Recurrence.Type,
-                Interval = request.Request.Recurrence.Interval,
-                EndDate = request.Request.Recurrence.EndDate
-            },
             Categories = categoryEntities
         };
 

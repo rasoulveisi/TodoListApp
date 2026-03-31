@@ -23,8 +23,20 @@ public class UpdateTodoItemCommandHandler(
         item.Title = request.Request.Title;
         item.Description = request.Request.Description;
         item.DueDate = request.Request.DueDate;
-        item.IsImportant = request.Request.IsImportant;
-        item.IsInMyDay = request.Request.IsInMyDay;
+        if (request.Request.IsCompleted)
+            item.Complete();
+        else
+            item.Uncomplete();
+        var dueDateIsToday = request.Request.DueDate.HasValue
+            && request.Request.DueDate.Value.Date == DateTime.UtcNow.Date;
+        if (request.Request.IsInMyDay || dueDateIsToday)
+            item.MarkAsMyDay();
+        else
+            item.UnmarkAsMyDay();
+        if (request.Request.IsImportant)
+            item.MarkAsImportant();
+        else
+            item.UnmarkAsImportant();
         item.Recurrence = request.Request.Recurrence is null ? null : new RecurrencePattern
         {
             Type = request.Request.Recurrence.Type,

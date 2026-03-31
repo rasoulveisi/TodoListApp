@@ -1,10 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using TodoList.Infrastructure;
+using TodoList.Api.Extensions;
+using TodoList.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<TodoListDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
