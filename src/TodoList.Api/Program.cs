@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TodoList.Infrastructure;
+using TodoList.Infrastructure.Extensions;
+using TodoList.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

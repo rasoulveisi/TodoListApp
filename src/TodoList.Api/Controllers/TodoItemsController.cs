@@ -2,6 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TodoList.Api.Features.TodoItems;
 using TodoList.Infrastructure.Dtos;
+using TodoList.Infrastructure.Exceptions;
+using System.Collections.Generic;
 
 namespace TodoList.Api.Controllers;
 
@@ -18,6 +20,15 @@ public class TodoItemsController(IMediator mediator) : ControllerBase
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
+        var validationErrors = new Dictionary<string, string[]>();
+        if (page < 1)
+            validationErrors[nameof(page)] = ["Page must be at least 1."];
+        if (pageSize < 1 || pageSize > 100)
+            validationErrors[nameof(pageSize)] = ["PageSize must be between 1 and 100."];
+
+        if (validationErrors.Count > 0)
+            throw new ValidationException(validationErrors);
+
         var result = await mediator.Send(
             new GetTodoItemsQuery(IsInMyDay: myDay, HasDueDate: planned, IsImportant: important, Page: page, PageSize: pageSize),
             cancellationToken);

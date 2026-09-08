@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.3" />
     <PackageReference Include="Aspire.Hosting.Testing" Version="13.1.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
@@ -18,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TodoList.Domain\TodoList.Domain.csproj" />
+    <ProjectReference Include="..\..\src\TodoList.Api\TodoList.Api.csproj" />
+    <ProjectReference Include="..\..\src\TodoList.Infrastructure\TodoList.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
